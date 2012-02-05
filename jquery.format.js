@@ -14,7 +14,7 @@
 			if (prec !== undefined) s = s.slice(0,prec);
 			return s;
 		}
-		padding = new Array(width-s.length+1).join(fill);
+		var padding = new Array(width-s.length+1).join(fill);
 		switch (align) {
 			case '^':
 				var i = Math.floor(padding.length / 2);
@@ -304,7 +304,7 @@
 		erb: function (fmt, args, opts) {
 			var t_sep = opts.thousands_sep;
 			var d_sep = opts.decimal_sep;
-			var pattern = /<%=\s*(.*?)\s*%>/g;
+			var pattern = /<%=\s*(h)?\s*(\S.*?)\s*%>/g;
 
 			if (opts.eval) {
 				var argnames = [];
@@ -313,7 +313,7 @@
 					argnames.push(name);
 					argvals.push(args[name]);
 				}
-				return fmt.replace(pattern, function (all, code) {
+				return fmt.replace(pattern, function (all, h, code) {
 					var params = argnames.slice();
 					params.push('return ('+code+');');
 					var f = Function.constructor.apply(Function,params);
@@ -321,17 +321,25 @@
 					if (value === null || value === undefined) {
 						return '';
 					}
-					return String(value);
+					value = String(value);
+					if (h) {
+						value = escapeHtml(value);
+					}
+					return value;
 				});
 			}
 			else {
-				return fmt.replace(pattern, function (all, key) {
+				return fmt.replace(pattern, function (all, h, key) {
 					if (key in args) {
 						var value = args[key];
 						if (value === null || value === undefined) {
 							return '';
 						}
-						return String(value);
+						value = String(value);
+						if (h) {
+							value = escapeHtml(value);
+						}
+						return value;
 					}
 					else {
 						throw new ReferenceError("Cannot resolve format string key: "+key);
@@ -341,11 +349,25 @@
 		}
 	};
 
+	var HTML_ESC_MAP = {
+		'&': '&amp;',
+		'<': '&lt;',
+		'>': '&gt;',
+		'"': '&quot;',
+		"'": '&apos;'
+	};
+
+	function escapeHtml (s) {
+		return s.replace(/[&<>"']/g, function (c) {
+			return HTML_ESC_MAP[c];
+		});
+	}
+
 	function format (fmt, args, opts) {
 		if (!opts) opts = {};
 		if (!opts.thousands_sep) opts.thousands_sep = format.thousands_sep || ',';
 		if (!opts.decimal_sep)   opts.decimal_sep   = format.decimal_sep   || '.';
-		var style = opts.style || format.default_style || 'simple';
+		var style = opts.style || format.default_style || 'python';
 		
 		if (typeof(style) !== "function") {
 			style = STYLES[style];
@@ -356,6 +378,7 @@
 
 	format.format_field = format_field;
 	format.styles = STYLES;
+	format.escapeHtml = escapeHtml;
 
 	return format;
 })();
