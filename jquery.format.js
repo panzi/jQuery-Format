@@ -164,7 +164,7 @@
 	var STYLES = {
 		simple: function (fmt, args, opts) {
 			var index = 0;
-			return fmt.replace(/{[^{}]*}|{{|}}|{|}/g, function (found) {
+			return fmt.replace(/\{[^\{\}]*\}|\{\{|\}\}|\{|\}/g, function (found) {
 				switch (found) {
 					case '{{': return '{';
 					case '}}': return '}';
@@ -188,7 +188,7 @@
 			var t_sep = opts.thousands_sep;
 			var d_sep = opts.decimal_sep;
 			var index = 0;
-			return fmt.replace(/{[^{}]*}|{{|}}|{|}/g, function (found) {
+			return fmt.replace(/\{[^\{\}]*\}|\{\{|\}\}|\{|\}/g, function (found) {
 				switch (found) {
 					case '{{': return '{';
 					case '}}': return '}';
@@ -250,7 +250,7 @@
 			var t_sep = opts.thousands_sep;
 			var d_sep = opts.decimal_sep;
 			var index = 0;
-			return fmt.replace(/%%|%{([^}]*)}|%(?:\(([^\)]*)\))?(?:(.)?([<>=^]))?([-+ ])?(#)?(0)?([0-9]+)?(,)?(?:\.([0-9]+))?([bcdoxXneEfFgG%sr])/g, function (
+			return fmt.replace(/%%|%\{([^\}]*)\}|%(?:\(([^\)]*)\))?(?:(.)?([<>=^]))?([-+ ])?(#)?(0)?([0-9]+)?(,)?(?:\.([0-9]+))?([bcdoxXneEfFgG%sr])/g, function (
 					all, ruby_key, python_key, fill, align, sign, base_prefix, zero_fill, width, sep_t, prec, type) {
 				if (all === '%%') return '%';
 				else if (ruby_key !== undefined) {
