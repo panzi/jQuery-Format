@@ -4,7 +4,7 @@
 	var FORMAT_MAP = {
 		number:    'g',
 		string:    's',
-		boolean:   's',
+		'boolean': 's',
 		object:    's',
 		undefined: 's'
 	};
